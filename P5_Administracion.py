@@ -1,30 +1,119 @@
 class Proceso:
-	"""Una clase simple para almacenar procesos"""
+    """Una clase simple para almacenar procesos"""
 
-	def __init__(self, nombre, tam):
-		"""Inicializa los atributos de la clase"""
-		self.nombre = nombre
-		self.tam = tam
+    def __init__(self, nombre, tam):
+        """Inicializa los atributos de la clase"""
+        self.nombre = nombre
+        self.tam = tam
 
 
 #Memoria
 MEMORIA = [1000, 400, 1800, 700, 900, 1200, 1500]
 
 def lista_procesos(filename):
-	"""Funcion para obtener la lista de procesos"""
-	lista = []
-	with open(filename) as file_obj:
-		for procesos in file_obj:
-			datos = procesos.split(',')
-			nombre = datos[0]
-			tamano = datos[1].strip()
-			tam_num = int(tamano[:-2])
-			lista.append(Proceso(nombre, tam_num))
-	return lista
+    """Funcion para obtener la lista de procesos"""
+    lista = []
+    with open(filename) as file_obj:
+        for procesos in file_obj:
+            datos = procesos.split(',')
+            nombre = datos[0]
+            tamano = datos[1].strip()
+            tam_num = int(tamano[:-2])
+            lista.append(Proceso(nombre, tam_num))
+    return lista
+
+def primer_ajuste(lista):
+    mem_temp = MEMORIA.copy()
+    list_temp = lista.copy()
+    while list_temp:
+        tam_bloque = 0
+        pro_actual = list_temp.pop(0)
+        for i in range(len(mem_temp)):
+            if pro_actual.tam <= mem_temp[i]:
+                tam_bloque = mem_temp[i]
+                mem_temp[i] = 0
+                break
+        if tam_bloque != 0:
+            print(f"El proceso {pro_actual.nombre} de {pro_actual.tam}kb se acomodó en el bloque de {tam_bloque}kb")
+        else:
+            print(f"El proceso {pro_actual.nombre} de {pro_actual.tam}kb no pudo colocarse en memoria")
+
+def mejor_ajuste(lista):
+    mem_temp = MEMORIA.copy()
+    list_temp = lista.copy()
+    indices = []
+    while list_temp:
+        tam_bloque = 0
+        pro_actual = list_temp.pop(0)
+        res = -1
+        for i in range(len(mem_temp)):
+            if pro_actual.tam <= mem_temp[i] and i not in indices:
+                if res == -1:
+                    tam_bloque = mem_temp[i]
+                    res = tam_bloque - pro_actual.tam
+                    index = i
+                else:
+                    if mem_temp[i] - pro_actual.tam < res:
+                        tam_bloque = mem_temp[i]
+                        res = tam_bloque - pro_actual.tam
+                        index = i   
+        indices.append(index)
+        if tam_bloque != 0:
+            print(f"El proceso {pro_actual.nombre} de {pro_actual.tam}kb se acomodó en el bloque de {tam_bloque}kb")
+        else:
+            print(f"El proceso {pro_actual.nombre} de {pro_actual.tam}kb no pudo colocarse en memoria")
+
+def peor_ajuste(lista):
+    mem_temp = MEMORIA.copy()
+    list_temp = lista.copy()
+    indices = []
+    while list_temp:
+        tam_bloque = 0
+        pro_actual = list_temp.pop(0)
+        res = -1
+        for i in range(len(mem_temp)):
+            if pro_actual.tam <= mem_temp[i] and i not in indices:
+                if res == -1:
+                    tam_bloque = mem_temp[i]
+                    res = tam_bloque - pro_actual.tam
+                    index = i
+                else:
+                    if mem_temp[i] - pro_actual.tam > res:
+                        tam_bloque = mem_temp[i]
+                        res = tam_bloque - pro_actual.tam
+                        index = i   
+        indices.append(index)
+        if tam_bloque != 0:
+            print(f"El proceso {pro_actual.nombre} de {pro_actual.tam}kb se acomodó en el bloque de {tam_bloque}kb")
+        else:
+            print(f"El proceso {pro_actual.nombre} de {pro_actual.tam}kb no pudo colocarse en memoria")
+
+def sig_ajuste(lista):
+    mem_temp = MEMORIA.copy()
+    list_temp = lista.copy()
+    cont = 0
+    while list_temp:
+        tam_bloque = 0
+        pro_actual = list_temp.pop(0)
+        for i in range(len(mem_temp)):
+            if cont > len(mem_temp):
+                cont = 0
+            if pro_actual.tam <= mem_temp[cont]:
+                tam_bloque = mem_temp[cont]
+                mem_temp[cont] = 0
+                cont = i + 1
+                break
+            else:
+                cont = i + 1
+        if tam_bloque != 0:
+            print(f"El proceso {pro_actual.nombre} de {pro_actual.tam}kb se acomodó en el bloque de {tam_bloque}kb")
+        else:
+            print(f"El proceso {pro_actual.nombre} de {pro_actual.tam}kb no pudo colocarse en memoria")
+    print(mem_temp)
+
 
 def menu():
-	procesos = lista_procesos("archivos.txt")
-	for obj in procesos:
-		print(obj.tam)
+    procesos = lista_procesos("archivos.txt")
+    primer_ajuste(procesos)
 
 menu()
