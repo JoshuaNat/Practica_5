@@ -109,11 +109,25 @@ def sig_ajuste(lista):
             print(f"El proceso {pro_actual.nombre} de {pro_actual.tam}kb se acomodó en el bloque de {tam_bloque}kb")
         else:
             print(f"El proceso {pro_actual.nombre} de {pro_actual.tam}kb no pudo colocarse en memoria")
-    print(mem_temp)
 
 
 def menu():
-    procesos = lista_procesos("archivos.txt")
-    primer_ajuste(procesos)
+    while True:
+        procesos = lista_procesos("archivos.txt")
+        print("Seleccione un algoritmo")
+        print("1)Primer ajuste\n2)Mejor ajuste\n3)Peor ajuste\n4)Siguiente ajuste\n5)Salir")
+        opcion = int(input("Ingrese un numero"))
+        if opcion == 1:
+            primer_ajuste(procesos)
+        elif opcion == 2:
+            mejor_ajuste(procesos)
+        elif opcion == 3:
+            peor_ajuste(procesos)
+        elif opcion == 4:
+            sig_ajuste(procesos)
+        elif opcion == 5:
+            break
+        else:
+            print("Ingrese un valor valido")
 
 menu()
